@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: restrobot-db
+    environment:
+      POSTGRES_DB: restrobot
+      POSTGRES_USER: restrobot
+      POSTGRES_PASSWORD: restrobot_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./db/02_add_orders.sql:/docker-entrypoint-initdb.d/02-add-orders.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restrobot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - restrobot-network
+
+  api:
+    build: .
+    container_name: restrobot-api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=postgresql://restrobot:restrobot_pass@db:5432/restrobot
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - restrobot-network
+    volumes:
+      - ./src:/app/src
+      - ./api:/app/api
+      - ./main.py:/app/main.py
+
+  app:
+    build: .
+    container_name: restrobot-app
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=postgresql://restrobot:restrobot_pass@db:5432/restrobot
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    networks:
+      - restrobot-network
+    volumes:
+      - ./src:/app/src
+      - ./main.py:/app/main.py
+
+volumes:
+  postgres_data:
+
+networks:
+  restrobot-network:
+    driver: bridge

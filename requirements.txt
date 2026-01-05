@@ -1,0 +1,11 @@
+langgraph==0.3.21
+langchain-core<0.4,>=0.3.81
+langchain-openai>=0.1.0
+langgraph-prebuilt==0.1.7
+python-dotenv>=1.0.0
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+websockets==14.1
+python-multipart==0.0.20
