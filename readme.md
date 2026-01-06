@@ -25,6 +25,16 @@ Browser (React) → FastAPI (REST) → LangGraph (State Machine) → OpenAI GPT
 - Real-time order management
 - RESTful API with auto-generated documentation
 
+## Near-future Features
+
+- **Authentication & roles**: customer sessions + admin/operator roles
+- **Admin dashboard**: manage menu, prices, modifiers, specials, out-of-stock
+- **Real-time updates**: order status updates (WebSocket/SSE) for customers + kitchen
+- **Payments**: Stripe integration (pay-at-table / online checkout)
+- **Order lifecycle**: statuses (received → preparing → ready → served) + ETA updates
+- **Observability**: structured logging, request tracing, and metrics
+- **Production session store**: Redis-backed sessions instead of in-memory storage
+
 ## Quick Start
 
 ### Prerequisites
